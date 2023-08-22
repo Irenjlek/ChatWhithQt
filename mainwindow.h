@@ -23,12 +23,13 @@ private slots:
     void on_lineEditMessage_returnPressed();
     void on_sendAllBut_clicked();
     void on_sendPrivateBut_clicked();
-    void on_usersBox_currentTextChanged(const QString &arg1);
     void on_actionOpen_another_client_triggered();
     void on_actionClose_this_client_triggered();
 
 private:
     void fillComboBox();
+    void fillMessagesForAll();
+    void fillPrivateMessages();
 
     Ui::MainWindow *ui;
     std::shared_ptr<Chat> _chat;

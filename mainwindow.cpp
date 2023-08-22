@@ -27,18 +27,15 @@ MainWindow *MainWindow::createClient(std::shared_ptr<Chat> chat = nullptr)
     return new MainWindow(chat);
 }
 
-
 void MainWindow::on_lineEditMessage_returnPressed()
 {
     on_sendAllBut_clicked();
 }
 
-
 void MainWindow::on_sendAllBut_clicked()
 {
     _chat->writeToAll(ui->lineEditMessage->text().toStdString());
 }
-
 
 void MainWindow::on_sendPrivateBut_clicked()
 {
@@ -47,19 +44,11 @@ void MainWindow::on_sendPrivateBut_clicked()
     _chat->writeToOne(text, user);
 }
 
-
-void MainWindow::on_usersBox_currentTextChanged(const QString &arg1)
-{
-
-}
-
-
 void MainWindow::on_actionOpen_another_client_triggered()
 {
     auto w = createClient();
     w->show();
 }
-
 
 void MainWindow::on_actionClose_this_client_triggered()
 {
@@ -69,5 +58,15 @@ void MainWindow::on_actionClose_this_client_triggered()
 void MainWindow::fillComboBox()
 {
     ui->usersBox->addItems(_chat->getAllLogins());
+}
+
+void MainWindow::fillMessagesForAll()
+{
+
+}
+
+void MainWindow::fillPrivateMessages()
+{
+
 }
 

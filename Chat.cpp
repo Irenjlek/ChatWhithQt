@@ -137,13 +137,28 @@ void Chat::writeToOne(std::string text, std::shared_ptr<User> recipient)
 
 void Chat::writeToAll(const std::string text)
 {
+    std::shared_ptr <Message> shp_mess;
 	for (auto& it : _users)
 	{
 		if (it.second->getLogin() != getActiveUser()->getLogin())
                 {
-                        writeToOne(text, it.second);
+                    shp_mess = std::make_shared<Message>(text, getActiveUser()->getLogin(),
+                                                               it.second->getLogin());
+                    it.second->addMessage(shp_mess);
 		}
-	}
+    }
+    if (_database->hasConnection()) {
+        std::string query = "SELECT id FROM users WHERE login LIKE '" + getActiveUser()->getLogin() + "';";
+        QVector<QString> ids = _database->queryResult(QString::fromStdString(query));
+        std::string id_sender = ids.at(0).toStdString();
+
+        query = "INSERT INTO messages (id_sender, id_receiver, text, status) "
+                "VALUES (" + id_sender + ", null, '" + text + "', 'sended');";
+        _database->executeQueryWithoutResult(QString::fromStdString(query));
+    }
+    std::string log = "From " + getActiveUser()->getLogin() + " to all; Time - " + shp_mess->getTime() +
+            "; Text - " + text + "\n";
+    _logger->writoToFile(log);
 }
 
 bool Chat::isLoginExist(const std::string& login)
