@@ -64,6 +64,34 @@ void Chat::updateUnreadedMessages()
     }
 }
 
+QStringList Chat::getMessages(bool isPrivate, QString login)
+{
+    QStringList result;
+    QString query = "SELECT login, text, date FROM messages JOIN users ON messages.id_user = users.id"
+                    "WHERE %1;";
+
+    if (_database->hasConnection()) {
+        if (isPrivate) {
+            QString activeUserId, secondUserId;
+            std::string idquery = "SELECT id FROM users WHERE login LIKE '" + getActiveUser()->getLogin() + "';";
+            QVector<QString> ids = _database->queryResult(QString::fromStdString(idquery));
+            activeUserId = ids.at(0);
+
+            QString idqueryq = "SELECT id FROM users WHERE login LIKE '" + login + "';";
+            ids = _database->queryResult(idqueryq);
+            secondUserId = ids.at(0);
+
+            query = query.arg("(id_sender = " + activeUserId + " AND id_receiver = " + secondUserId +
+                              ") OR (id_sender = " + secondUserId + " AND id_receiver = " + activeUserId);
+        } else {
+            query = query.arg("id_receiver is null");
+        }
+        result = _database->queryResult(query).toList();
+    }
+
+    return result;
+}
+
 void Chat::setActiveUser(const std::shared_ptr<User>& user)
 {
 	if (user != nullptr)
@@ -93,6 +121,7 @@ void Chat::writeToOne(std::string text, std::shared_ptr<User> recipient)
 	std::shared_ptr <Message> shp_mess = std::make_shared<Message>(text, getActiveUser()->getLogin(),
 		                                           recipient->getLogin());
         recipient->addMessage(shp_mess);
+        std::string id_message;
         if (_database->hasConnection()) {
             std::string query = "SELECT id FROM users WHERE login LIKE '" + getActiveUser()->getLogin() + "';";
             QVector<QString> ids = _database->queryResult(QString::fromStdString(query));
@@ -108,7 +137,7 @@ void Chat::writeToOne(std::string text, std::shared_ptr<User> recipient)
 
             query = "SELECT id FROM messages WHERE id_sender = " + id_sender + " AND id_receiver = " + id_recipient + " AND text LIKE '" + text + "';";
             ids = _database->queryResult(QString::fromStdString(query));
-            std::string id_message = ids.at(0).toStdString();
+            id_message = ids.at(0).toStdString();
         }
         
         std::string log = "From " + getActiveUser()->getLogin() + " to " + recipient->getLogin() + "; Time - " + shp_mess->getTime() +
@@ -366,7 +395,7 @@ bool Chat::initServer(sockaddr_in serveraddress)
         std::string m = message;
         std::cout << "Data received from client: " << message << std::endl;
         std::string query = "UPDATE messages SET status = 'received' WHERE id = " + m + ";";
-        _database->executeQueryWithoutResult(query);
+        _database->executeQueryWithoutResult(QString::fromStdString(query));
 
         std::cout << "Server received a new message. Would you like exit and read it?" << std::endl;
         std::string ansver;

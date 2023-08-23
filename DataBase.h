@@ -2,16 +2,14 @@
 
 #if defined(_WIN64)
 #pragma comment(lib, "libmysql.lib")
-//#include "mysql.h"
 #include <QSqlDatabase>
 #elif defined(__linux__)
-#include "mysql/mysql.h"
+#include <QtSql/QSqlDatabase>
 #endif
 
 #include <string>
 #include <vector>
 #include <memory>
-#include <QSqlDatabase>
 
 #include <QVector>
 #include <QString>

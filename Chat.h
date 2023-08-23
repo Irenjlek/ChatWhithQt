@@ -61,4 +61,5 @@ public:
 	bool createDBConnection();
 	void getUsersFromDB();
 	void updateUnreadedMessages();
+    QStringList getMessages(bool isPrivate, QString login = "");
 };

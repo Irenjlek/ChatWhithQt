@@ -11,6 +11,7 @@ MainWindow::MainWindow(std::shared_ptr<Chat> chat, QWidget *parent)
 {
     ui->setupUi(this);
     fillComboBox();
+    connect(ui->usersBox, &QComboBox::currentTextChanged, this, &MainWindow::on_usersBox_currentTextChanged);
 }
 
 MainWindow::~MainWindow()
@@ -62,11 +63,29 @@ void MainWindow::fillComboBox()
 
 void MainWindow::fillMessagesForAll()
 {
-
+   QStringList messages = _chat->getMessages(false);
+   QString txt;
+   for(QString str: messages) {
+       txt.append(str);
+       txt.append('\n');
+   }
+   ui->messagesForAll->setText(txt);
 }
 
 void MainWindow::fillPrivateMessages()
 {
-
+    QStringList messages = _chat->getMessages(true, ui->usersBox->currentText());
+    QString txt;
+    for(QString str: messages) {
+        txt.append(str);
+        txt.append('\n');
+    }
+    ui->privateMessages->setText(txt);
 }
 
+
+void MainWindow::on_usersBox_currentTextChanged(const QString &arg1)
+{
+    Q_UNUSED(arg1);
+    fillPrivateMessages();
+}

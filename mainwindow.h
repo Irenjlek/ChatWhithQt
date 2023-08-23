@@ -26,6 +26,8 @@ private slots:
     void on_actionOpen_another_client_triggered();
     void on_actionClose_this_client_triggered();
 
+    void on_usersBox_currentTextChanged(const QString &arg1);
+
 private:
     void fillComboBox();
     void fillMessagesForAll();
