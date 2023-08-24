@@ -21,6 +21,7 @@
      </property>
      <widget class="LoginForm" name="loginWgt"/>
      <widget class="RegistrationForm" name="registrationWgt"/>
+     <widget class="addDatabaseForm" name="dbform"/>
     </widget>
    </item>
   </layout>
@@ -36,6 +37,12 @@
    <class>RegistrationForm</class>
    <extends>QWidget</extends>
    <header>registrationform.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>addDatabaseForm</class>
+   <extends>QWidget</extends>
+   <header>adddatabaseform.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,5 +1,6 @@
 #include "registrationform.h"
 #include "ui_registrationform.h"
+#include "BadLogin.h"
 
 #include <QMessageBox>
 
@@ -27,13 +28,17 @@ void RegistrationForm::on_loginBut_clicked()
 
 
 void RegistrationForm::on_okBut_clicked()
-{    
+{
     if (ui->passwordEdit->text() != ui->passwordConfirm->text()) {
         QMessageBox::critical(this, "Error", "Passwords not match");
         return;
     }
-    _chat->createNewUser(ui->nameEdit->text().toStdString(), ui->LoginEdit->text().toStdString(), ui->passwordEdit->text().toStdString());
-    emit accept();
+    try {
+        _chat->createNewUser(ui->nameEdit->text().toStdString(), ui->LoginEdit->text().toStdString(), ui->passwordEdit->text().toStdString());
+        emit accept();
+    }    catch (BadLogin& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
 }
 
 

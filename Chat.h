@@ -47,18 +47,14 @@ public:
 	void writeToAll(const std::string text);
 	bool isLoginExist(const std::string& login);
 	std::shared_ptr <User> getActiveUser();
-	std::shared_ptr <User> getUser(const std::string login);
-	void showMenuAddMessege();
-	friend std::ostream& operator<< (std::ostream& os, const Chat&);
+    std::shared_ptr <User> getUser(const std::string login);
     QStringList getAllLogins();
-	bool isUnicName(const std::string name);
 	std::string getNameByLogin(const std::string login);
-	std::string getLoginByName(const std::string name);
-	bool isontheList(const std::string name);
+    std::string getLoginByName(const std::string name);
 #if defined(__linux__)
     bool initClientServerMode();
 #endif
-	bool createDBConnection();
+    bool createDBConnection(QStringList params);
 	void getUsersFromDB();
 	void updateUnreadedMessages();
     QStringList getMessages(bool isPrivate, QString login = "");

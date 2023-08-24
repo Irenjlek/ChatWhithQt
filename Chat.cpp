@@ -23,10 +23,6 @@ Chat::Chat() : _users_count(0),
     _database(std::make_shared <DataBase>()),
     _logger(new Logger("log.txt"))
 {
-    if (!_database->connect("", 1, "", "", ""))
-        std::cout << "Database connection is absent!";
-    else
-        getUsersFromDB();
 }
 
 Chat::~Chat()
@@ -37,7 +33,7 @@ void Chat::createNewUser(const std::string& name, const std::string& login, cons
 {
 	if (isLoginExist(login)) {
 		std::cout << "User with login " << login << " is already exists." << std::endl;
-		return;
+        throw BadLogin();
 	}		
     std::shared_ptr <User> newUser = std::make_shared <User>(name, login, password);
     addUser(newUser);
@@ -67,7 +63,7 @@ void Chat::updateUnreadedMessages()
 QStringList Chat::getMessages(bool isPrivate, QString login)
 {
     QStringList result;
-    QString query = "SELECT login, text, date FROM messages JOIN users ON messages.id_user = users.id"
+    QString query = "SELECT login, text, DATE_FORMAT(date, '%d/%m/%y %h:%i') FROM messages JOIN users ON messages.id_sender = users.id "
                     "WHERE %1;";
 
     if (_database->hasConnection()) {
@@ -82,7 +78,7 @@ QStringList Chat::getMessages(bool isPrivate, QString login)
             secondUserId = ids.at(0);
 
             query = query.arg("(id_sender = " + activeUserId + " AND id_receiver = " + secondUserId +
-                              ") OR (id_sender = " + secondUserId + " AND id_receiver = " + activeUserId);
+                              ") OR (id_sender = " + secondUserId + " AND id_receiver = " + activeUserId + ")");
         } else {
             query = query.arg("id_receiver is null");
         }
@@ -94,8 +90,6 @@ QStringList Chat::getMessages(bool isPrivate, QString login)
 
 void Chat::setActiveUser(const std::shared_ptr<User>& user)
 {
-	if (user != nullptr)
-		std::cout << "Hello, " << user->getName() << "! Nice to see you!" << std::endl;
 	_activeUser = user;
 }
 
@@ -205,31 +199,13 @@ std::shared_ptr<User> Chat::getActiveUser()
 	return _activeUser;
 }
 
-void Chat::showMenuAddMessege()
-{
-	std::cout << "Choose recipient mode : 1 - to One , 2 - to All, 3 - Exit \n";
-}
-
 std::shared_ptr<User> Chat::getUser(const std::string login)
 {
 	for (auto& it : _users)
 		if (it.second->getLogin() == login)				
 			return it.second;    
 		
-		return std::make_shared <User>();
-}
-
-std::ostream& operator<< (std::ostream& os, const Chat& ch)
-{
-	int count(0);
-	for (auto& user : ch._users)
-	{		
-		os << std::setw(3) << " < " << *user.second << " > ";
-		count++;
-		if (!(count % 6))
-			os << std::endl;
-	}
-	return os;
+    return std::make_shared <User>();
 }
 
 QStringList Chat::getAllLogins()
@@ -240,26 +216,6 @@ QStringList Chat::getAllLogins()
         list.append(QString::fromStdString(user.second->getLogin()));
 	}
     return list;
-}
-
-
-bool Chat::isUnicName(const std::string name)
-{
-	int count(0);
-	
-	for (auto& user : _users)
-	{
-		
-		if (user.second->getName() == name)
-			count++;
-	}
-	
-	if (count == 1)
-		return true;
-	
-	else 
-		return false;
-
 }
 
 std::string Chat::getNameByLogin(const std::string login)
@@ -286,19 +242,6 @@ std::string Chat::getLoginByName(const std::string name)
 	std::cout << "Login by " << name << "is not found!\n";
 	return "\0";
 }
-
-
-bool Chat::isontheList(const std::string name)
-{
-	for (auto& tempname : _users)
-	{
-		if (tempname.second->getName() == name)
-			return true;
-	}
-	std::cout << "bad recipient, try again!\n";
-        return false;
-}
-
 
 #if defined(__linux__)
 bool Chat::initClientServerMode()
@@ -422,27 +365,13 @@ void Chat::parseMessage(std::string message)
 }
 #endif
 
-bool Chat::createDBConnection()
+bool Chat::createDBConnection(QStringList params)
 {
-    unsigned int port = 0;
-    std::string ip, namedb, user, password;
-
-    std::cout << "Enter data for database connection:" << std::endl << "IP:" << std::endl;
-    std::cin >> ip;
-
-    std::cout << "Port:" << std::endl;
-    std::cin >> port;
-
-    std::cout << "Database name:" << std::endl;
-    std::cin >> namedb;
-
-    std::cout << "User:" << std::endl;
-    std::cin >> user;
-
-    std::cout << "Password:" << std::endl;
-    std::cin >> password;
-
-    return _database->connect(QString::fromStdString(ip), port, QString::fromStdString(namedb), QString::fromStdString(user), QString::fromStdString(password));
+   // if (!_database->connect(params.at(0), params.at(1).toInt(), params.at(2), params.at(3), params.at(4)))
+        if (!_database->connect("localhost", 3306, "MySQLChatDB", "root", "qirter53421"))
+        std::cout << "Database connection is absent!";
+    else
+        getUsersFromDB();
 }
 
 void Chat::getUsersFromDB()

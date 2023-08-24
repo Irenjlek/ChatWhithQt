@@ -12,11 +12,11 @@
 bool DataBase::connect(QString host, unsigned int port, QString dbname, QString user, QString password)
 {
     _mysql = QSqlDatabase::addDatabase("QODBC");
-    _mysql.setHostName("localhost");
-    _mysql.setPort(3306);
-    _mysql.setDatabaseName("MySQLChatDB");
-    _mysql.setUserName("root");
-    _mysql.setPassword("qirter53421");
+    _mysql.setHostName(host);
+    _mysql.setPort(port);
+    _mysql.setDatabaseName(dbname);
+    _mysql.setUserName(user);
+    _mysql.setPassword(password);
     if (!_mysql.open()){
         _connection = false;
         QMessageBox::warning(nullptr, "Error", _mysql.lastError().text());
@@ -35,7 +35,6 @@ bool DataBase::hasConnection()
 
 QVector<QString> DataBase::queryResult(QString queryText)
 {
-    qDebug() << queryText;
     QVector<QString> result;
     QSqlQuery query(_mysql);
     query.prepare(queryText);
@@ -54,7 +53,6 @@ QVector<QString> DataBase::queryResult(QString queryText)
 
 void DataBase::executeQueryWithoutResult(QString queryText)
 {
-    qDebug() << queryText;
     QSqlQuery query(_mysql);
     query.prepare(queryText);
     if (!query.exec()) {

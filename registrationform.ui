@@ -163,6 +163,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>LoginEdit</tabstop>
+  <tabstop>nameEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>passwordConfirm</tabstop>
+  <tabstop>okBut</tabstop>
+  <tabstop>cancelBut</tabstop>
+  <tabstop>loginBut</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

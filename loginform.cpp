@@ -32,11 +32,14 @@ void LoginForm::on_okBut_clicked()
 {
     try {
         _chat->login(ui->loginEdit->text().toStdString(), ui->passwordEdit->text().toStdString());
+        emit accept();
     }
     catch (BadLogin& e) {
-        QMessageBox::critical(this, "Error", e.what());
+        QMessageBox::warning(this, "Error", e.what());
     }
-    emit accept();
+    catch (BadPassword& e) {
+        QMessageBox::warning(this, "Error", e.what());
+    }
 }
 
 

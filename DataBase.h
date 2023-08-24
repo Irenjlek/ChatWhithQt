@@ -1,7 +1,6 @@
 #pragma once
 
 #if defined(_WIN64)
-#pragma comment(lib, "libmysql.lib")
 #include <QSqlDatabase>
 #elif defined(__linux__)
 #include <QtSql/QSqlDatabase>

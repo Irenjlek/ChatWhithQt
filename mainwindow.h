@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "Chat.h"
+#include "User.h"
 
 #include <QMainWindow>
 #include <memory>
@@ -15,9 +16,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(std::shared_ptr<Chat> chat = nullptr, QWidget *parent = nullptr);
+    MainWindow(User activeUser, QStringList connectParams, QWidget *parent = nullptr);
     ~MainWindow();
-    static MainWindow* createClient(std::shared_ptr<Chat> chat);
+    static MainWindow* createClient(std::shared_ptr<Chat> chat = nullptr);
+    static int _instancesCount;
+    static QStringList _connectionParams;
 
 private slots:
     void on_lineEditMessage_returnPressed();
@@ -25,15 +28,19 @@ private slots:
     void on_sendPrivateBut_clicked();
     void on_actionOpen_another_client_triggered();
     void on_actionClose_this_client_triggered();
-
     void on_usersBox_currentTextChanged(const QString &arg1);
+    void updateCharts();
 
 private:
     void fillComboBox();
-    void fillMessagesForAll();
-    void fillPrivateMessages();
+    void fillMessagesForAll(QStringList messages = QStringList());
+    void fillPrivateMessages(QStringList messages = QStringList());
 
     Ui::MainWindow *ui;
     std::shared_ptr<Chat> _chat;
+    User _activeUser;
+    int _countAllMessages;
+    int _countPrivateMessages;
+    QTimer* _timer;
 };
 #endif // MAINWINDOW_H
