@@ -367,8 +367,7 @@ void Chat::parseMessage(std::string message)
 
 bool Chat::createDBConnection(QStringList params)
 {
-   // if (!_database->connect(params.at(0), params.at(1).toInt(), params.at(2), params.at(3), params.at(4)))
-        if (!_database->connect("localhost", 3306, "MySQLChatDB", "root", "qirter53421"))
+   if (!_database->connect(params.at(0), params.at(1).toInt(), params.at(2), params.at(3), params.at(4)))
         std::cout << "Database connection is absent!";
     else
         getUsersFromDB();
